@@ -4,11 +4,10 @@ import main.server.models.exception.BorrowException;
 import main.server.models.exception.ReservationException;
 import main.server.models.members.Subscriber;
 
-public class DVD extends GeneralDocument{
+public class DVD extends GeneralDocument {
     private int recommendedAge;
     private boolean forAdults;
     private static final int ADULTS_AGE = 16;
-
 
     public DVD(String title, int recommendedAge) {
         super(title);

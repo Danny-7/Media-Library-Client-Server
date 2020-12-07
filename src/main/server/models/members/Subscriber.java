@@ -1,5 +1,7 @@
 package main.server.models.members;
 
+import main.server.ServerApp;
+
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -10,7 +12,7 @@ public class Subscriber {
     private LocalDate birthdayDate;
 
     public Subscriber(String name, LocalDate birthdayDate) {
-        this.id = 0; //TODO à changer
+        this.id = ServerApp.getNewMemberNumber();
         this.name = name;
         this.birthdayDate = birthdayDate;
         this.age = Period.between(birthdayDate, LocalDate.now()).getYears();

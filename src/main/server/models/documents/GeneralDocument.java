@@ -1,5 +1,6 @@
 package main.server.models.documents;
 
+import main.server.ServerApp;
 import main.server.models.Document;
 import main.server.models.State;
 import main.server.models.exception.BorrowException;
@@ -23,7 +24,7 @@ public class GeneralDocument implements Document {
 
     public GeneralDocument(String title) {
         this.title = title;
-        number = 0; //TODO à changer
+        this.number = ServerApp.getNewDocNumber();
         this.status = State.AVAILABLE;
         this.holder = null;
         this.borrowDate = null;
@@ -57,12 +58,10 @@ public class GeneralDocument implements Document {
 
     public boolean isBorrowed() {
         return this.status.equals(State.BORROWED);
-
     }
 
     public boolean isAvailable() {
         return this.status.equals(State.AVAILABLE);
-
     }
 
     @Override
