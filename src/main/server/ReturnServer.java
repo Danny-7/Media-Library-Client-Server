@@ -1,5 +1,7 @@
 package main.server;
 
+import main.server.services.ReturnService;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -26,7 +28,11 @@ public class ReturnServer implements Runnable {
                 Socket csocket = ssocket.accept();
                 System.out.println(suffix + " request received from " + csocket.getInetAddress());
 
-                //Service
+                ReturnService returnService = new ReturnService(csocket);
+
+                while(true) {
+                    new Thread(returnService).start();
+                }
 
             } catch (IOException e) {
                 //Handle exception

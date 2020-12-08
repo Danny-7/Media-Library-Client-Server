@@ -1,5 +1,7 @@
 package main.server;
 
+import main.server.services.BorrowService;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -26,7 +28,11 @@ public class BorrowServer implements Runnable {
                 Socket csocket = ssocket.accept();
                 System.out.println(suffix + " request received from " + csocket.getInetAddress());
 
-                //Service
+                BorrowService borrowService = new BorrowService(csocket);
+
+                while(true) {
+                    new Thread(borrowService).start();
+                }
 
             } catch (IOException e) {
                 //Handle exception
