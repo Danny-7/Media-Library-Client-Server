@@ -27,11 +27,10 @@ public class ReservationServer implements Runnable {
             try {
                 Socket csocket = ssocket.accept();
                 System.out.println(suffix + " request received from " + csocket.getInetAddress());
-
-                ReservationService reservationService = new ReservationService(csocket);
-                while(true) {
-                    new Thread(reservationService).start();
-                }
+                System.out.println(csocket);
+                Thread t = new Thread(new ReservationService(csocket));
+                t.start();
+                System.out.println(t.isAlive());
 
             } catch (IOException e) {
                 //Handle exception

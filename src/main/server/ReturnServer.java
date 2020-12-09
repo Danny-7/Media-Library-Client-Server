@@ -12,9 +12,9 @@ public class ReturnServer implements Runnable {
     ServerSocket ssocket;
 
     public ReturnServer() {
-        System.out.println(suffix + " Listening on port " + this.port + "...");
+        System.out.println(suffix + " Listening on port " + port + "...");
         try {
-            this.ssocket = new ServerSocket(this.port);
+            this.ssocket = new ServerSocket(port);
         } catch (IOException e) {
             //Handle exception
             e.printStackTrace();
@@ -27,12 +27,7 @@ public class ReturnServer implements Runnable {
             try {
                 Socket csocket = ssocket.accept();
                 System.out.println(suffix + " request received from " + csocket.getInetAddress());
-
-                ReturnService returnService = new ReturnService(csocket);
-
-                while(true) {
-                    new Thread(returnService).start();
-                }
+                new Thread(new ReturnService(csocket)).start();
 
             } catch (IOException e) {
                 //Handle exception
