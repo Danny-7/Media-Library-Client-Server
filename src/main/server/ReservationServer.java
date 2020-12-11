@@ -1,5 +1,7 @@
 package main.server;
 
+import main.server.services.ReservationService;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,9 +12,9 @@ public class ReservationServer implements Runnable {
     ServerSocket ssocket;
 
     public ReservationServer() {
-        System.out.println(suffix + " Listening on port " + this.port + "...");
+        System.out.println(suffix + " Listening on port " + port + "...");
         try {
-            this.ssocket = new ServerSocket(this.port);
+            this.ssocket = new ServerSocket(port);
         } catch (IOException e) {
             //Handle exception
             e.printStackTrace();
@@ -25,8 +27,10 @@ public class ReservationServer implements Runnable {
             try {
                 Socket csocket = ssocket.accept();
                 System.out.println(suffix + " request received from " + csocket.getInetAddress());
-
-                //Service
+                System.out.println(csocket);
+                Thread t = new Thread(new ReservationService(csocket));
+                t.start();
+                System.out.println(t.isAlive());
 
             } catch (IOException e) {
                 //Handle exception
