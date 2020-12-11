@@ -1,33 +1,32 @@
 package main.server.models.documents;
 
+import main.server.main.ServerApp;
 import main.server.models.Document;
 import main.server.models.State;
 import main.server.models.exception.BorrowException;
 import main.server.models.exception.ReservationException;
+import main.server.models.exception.SuspensionException;
 import main.server.models.members.Subscriber;
-import main.server.models.utils.AutomatedCancellationReservation;
+import main.server.services.LibraryService;
 
 import java.time.LocalDateTime;
-import java.util.Timer;
 
 public class GeneralDocument implements Document {
-    private int number;
-    private String title;
+    private final int number;
+    private final String title;
 
     private State status;
     private Subscriber holder;
 
     private LocalDateTime borrowDate;
     private static final int MAX_RESERVATION_TIME = 72000000;
-    private Timer endReservation;
 
     public GeneralDocument(String title) {
         this.title = title;
-        number = 0; //TODO à changer
+        number = ServerApp.getNewDocNumber();
         this.status = State.AVAILABLE;
         this.holder = null;
         this.borrowDate = null;
-        this.endReservation = new Timer();
     }
 
     @Override
@@ -68,26 +67,30 @@ public class GeneralDocument implements Document {
     @Override
     public void reservationFor(Subscriber sb) throws ReservationException {
         synchronized (this) {
+            if(sb.isSuspended())
+                throw new SuspensionException("The subscriber is suspended !");
             if(!isAvailable())
                 throw new ReservationException("The document is not available");
             status = State.RESERVED;
             this.holder = sb;
             // scheduling the end of the reservation (2 hours)
-            endReservation.schedule(new AutomatedCancellationReservation(this), MAX_RESERVATION_TIME);
+            LibraryService.scheduleReservation(this, MAX_RESERVATION_TIME);
         }
     }
 
     @Override
     public void borrowBy(Subscriber sb) throws BorrowException {
         synchronized (this) {
+            if(sb.isSuspended())
+                throw new SuspensionException("The subscriber is suspended !");
             if(!isAvailable())
                 throw new BorrowException("The document is not available");
-            if(this.holder == null){
+            if(this.holder == null)
                 holder = sb;
-            }
             else {
                 status = State.BORROWED;
                 borrowDate = LocalDateTime.now();
+                LibraryService.cancelReservation(this.number);
             }
         }
     }
@@ -97,11 +100,15 @@ public class GeneralDocument implements Document {
         synchronized (this) {
             if(isAvailable())
                 return;
-            if(isReserved() || isBorrowed()) {
-                holder = null;
-                status = State.AVAILABLE;
-                endReservation.cancel();
-            }
+            if(isReserved())
+                LibraryService.cancelReservation(this.number);
+            else if(isBorrowed())
+                if(LibraryService.isBorrowLate(this))
+                    holder.suspend();
+
+            holder = null;
+            status = State.AVAILABLE;
+
         }
     }
 
@@ -113,7 +120,6 @@ public class GeneralDocument implements Document {
                 ", status=" + status +
                 ", holder=" + holder +
                 ", borrowDate=" + borrowDate +
-                ", endReservation=" + endReservation +
                 '}';
     }
 }

@@ -1,12 +1,30 @@
 package main.server.services;
 
 import main.server.main.ServerApp;
+import main.server.models.Document;
 import main.server.models.documents.GeneralDocument;
 import main.server.models.members.Subscriber;
+import main.server.models.utils.AutomatedCancellationReservation;
+import main.server.models.utils.AutomatedCancellationSuspension;
 
 import java.net.Socket;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class LibraryService extends NetworkService {
+
+    private static final Timer endReservations = new Timer();
+    private static final Timer endSuspensions = new Timer();
+
+    private static HashMap<Integer, TimerTask> reservations;
+    private static HashMap<Integer, TimerTask> suspensions;
+
+    private static final int MAX_BORROW_WEEKS = 3;
+    private static final int MONTH_SUSPENDED = 1;
+
 
     public LibraryService(Socket socket) {
         super(socket);
@@ -62,6 +80,38 @@ public class LibraryService extends NetworkService {
             }
         }
         return doc;
+    }
+
+    public static boolean isBorrowLate(GeneralDocument doc) {
+        LocalDateTime borrowDate = doc.getBorrowDate();
+
+        return Duration.between(borrowDate, LocalDateTime.now()).toMillis() >
+                Duration.between(borrowDate, borrowDate.plusWeeks(MAX_BORROW_WEEKS)).toMillis();
+    }
+
+
+    public static void cancelReservation(Integer id) {
+        reservations.get(id).cancel();
+    }
+
+    public static void cancelSuspension(Integer id) {
+        suspensions.get(id).cancel();
+    }
+
+    public static void scheduleReservation(Document doc, long time) {
+        TimerTask autoReservation = new AutomatedCancellationReservation(doc);
+        reservations.put(doc.number(), autoReservation);
+        endReservations.schedule(autoReservation, time);
+    }
+
+    public static void scheduleSuspension(Subscriber sub) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime end = now.plusMonths(MONTH_SUSPENDED);
+        long time = Duration.between(now, end).toMillis();
+
+        TimerTask autoSuspension = new AutomatedCancellationSuspension(sub);
+        suspensions.put(sub.getId(), autoSuspension);
+        endSuspensions.schedule(autoSuspension, time);
     }
 
 }

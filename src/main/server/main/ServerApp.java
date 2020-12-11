@@ -15,6 +15,16 @@ public class ServerApp {
     public static List<GeneralDocument> documents;
     public static List<Subscriber> subscribers;
 
+    private static int lastDocumentNumber = 0;
+    private static int lastMemberNumber = 0;
+
+    public static int getNewDocNumber() {
+        return lastDocumentNumber++;
+    }
+    public static int getNewMemberNumber() {
+        return lastMemberNumber++;
+    }
+
     //On lance ici les 3 threads réservation / emprunt / retour
     public static void main(String[] args) {
 
