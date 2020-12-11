@@ -23,16 +23,18 @@ public class ClientApp {
 
             Socket socket = new Socket(HOST, PORT);
 
-            socketIn = new ObjectInputStream(socket.getInputStream());
             socketOut = new ObjectOutputStream(socket.getOutputStream());
+            socketIn = new ObjectInputStream(socket.getInputStream());
             String serverMessage;
             String clientResponse;
 
             while(true) {
                 serverMessage = (String)socketIn.readObject();
                 System.out.println(serverMessage);
-                clientResponse = scanIn.nextLine();
+                while((clientResponse = scanIn.nextLine()).isEmpty());
                 socketOut.writeObject(clientResponse);
+                socketOut.flush();
+                socketOut.reset();
             }
 
 

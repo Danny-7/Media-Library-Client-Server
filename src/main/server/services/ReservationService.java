@@ -17,7 +17,14 @@ public class ReservationService extends LibraryService implements Runnable{
         try {
             send("Enter your subscriber number please ?");
 
-            int subNumber = (int) read();
+            String read;
+            do {
+                read = read().toString();
+                System.out.println("read : " + read);
+            } while(!isInteger(read));
+
+            int subNumber = Integer.parseInt(read);
+//            int subNumber = (int) read();
 
             Subscriber sb = findSubscriber(subNumber);
             if(sb == null)
@@ -25,7 +32,14 @@ public class ReservationService extends LibraryService implements Runnable{
 
             send("Enter a document number please ?");
 
-            int docNumber = (int) read();
+            do {
+                read = read().toString();
+            } while(!isInteger(read));
+            send("read: " + read);
+
+            int docNumber = Integer.parseInt(read);
+//            int docNumber = (int) read();
+
             GeneralDocument doc = findDocument(docNumber);
             if(doc == null)
                 throw new IllegalAccessException("The document doesn't exist !");
@@ -37,5 +51,18 @@ public class ReservationService extends LibraryService implements Runnable{
         } catch(IllegalAccessException | BorrowException e1 ) {
             send("error : " + e1.getMessage());
         }
+    }
+
+    private static boolean isInteger(String str)
+    {
+        try
+        {
+            int i = Integer.parseInt(str);
+        }
+        catch(NumberFormatException nfe)
+        {
+            return false;
+        }
+        return true;
     }
 }

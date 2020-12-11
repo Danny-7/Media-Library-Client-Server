@@ -12,8 +12,8 @@ public class NetworkService {
 
     public NetworkService(Socket socket) {
         try {
-            in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             System.out.println("An error occurred while we tried to communicate with the server");
         }
@@ -23,6 +23,8 @@ public class NetworkService {
         try {
             assert false;
             out.writeObject(message);
+            out.flush();
+            out.reset();
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
