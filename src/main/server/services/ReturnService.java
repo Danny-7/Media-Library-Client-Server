@@ -15,31 +15,15 @@ public class ReturnService extends LibraryService implements Runnable{
     @Override
     public void run() {
         try {
-
-            send("Enter your subscriber number please ?");
-
-            int subNumber = (int) read();
-
-            Subscriber sb = findSubscriber(subNumber);
-            if(sb == null)
-                throw new IllegalAccessException("The subscriber doesn't exist !");
-
-            send("Enter a document number please ?");
-
-            int docNumber = (int) read();
-            GeneralDocument doc = findDocument(docNumber);
-            if(doc == null)
-                throw new IllegalAccessException("The document doesn't exist !");
+            Subscriber sb = requestSubscriber();
+            GeneralDocument doc = requestDocument();
 
             doc.returnBack();
 
             send("The document : " + doc + " has been successfully returned");
 
-        } catch(IllegalAccessException | BorrowException e1 ) {
+        } catch(BorrowException e1 ) {
             send("error : " + e1.getMessage());
         }
     }
-
-
-
 }
