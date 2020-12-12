@@ -27,7 +27,7 @@ public class DVD extends GeneralDocument{
     public void borrowBy(Subscriber sb) throws BorrowException {
         if(sb.getAge() < this.recommendedAge)
             throw new BorrowException("You don't have the recommended age !");
-        super.reservationFor(sb);
+        super.borrowBy(sb);
     }
 
     @Override

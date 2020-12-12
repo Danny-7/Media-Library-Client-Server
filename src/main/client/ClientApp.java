@@ -8,9 +8,6 @@ public class ClientApp {
     private static int PORT = 4000;
     private static final String HOST = "localhost";
 
-    private static ObjectInputStream socketIn;
-    private static ObjectOutputStream socketOut;
-
     public static void main(String[] args) {
 
         try {
@@ -18,26 +15,25 @@ public class ClientApp {
 
             System.out.println("Enter a port connection (4000 default)");
 
-            if(scanIn.hasNext())
-                PORT = scanIn.nextInt();
+            String line = scanIn.nextLine();
+            if(!line.equals(""))
+                PORT = Integer.parseInt(line);
 
             Socket socket = new Socket(HOST, PORT);
 
-            socketOut = new ObjectOutputStream(socket.getOutputStream());
-            socketIn = new ObjectInputStream(socket.getInputStream());
+            ObjectOutputStream socketOut = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream socketIn = new ObjectInputStream(socket.getInputStream());
             String serverMessage;
             String clientResponse;
 
             while(true) {
-                serverMessage = (String)socketIn.readObject();
+                serverMessage = (String) socketIn.readObject();
                 System.out.println(serverMessage);
                 while((clientResponse = scanIn.nextLine()).isEmpty());
                 socketOut.writeObject(clientResponse);
                 socketOut.flush();
                 socketOut.reset();
             }
-
-
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

@@ -19,8 +19,8 @@ public class LibraryService extends NetworkService {
     private static final Timer endReservations = new Timer();
     private static final Timer endSuspensions = new Timer();
 
-    private static HashMap<Integer, TimerTask> reservations;
-    private static HashMap<Integer, TimerTask> suspensions;
+    private static final HashMap<Integer, TimerTask> reservations = new HashMap<>();
+    private static final HashMap<Integer, TimerTask> suspensions = new HashMap<>();
 
     private static final int MAX_BORROW_WEEKS = 3;
     private static final int MONTH_SUSPENDED = 1;
