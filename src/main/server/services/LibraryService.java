@@ -87,6 +87,8 @@ public class LibraryService extends NetworkService {
 
         return Duration.between(borrowDate, LocalDateTime.now()).toMillis() >
                 Duration.between(borrowDate, borrowDate.plusWeeks(MAX_BORROW_WEEKS)).toMillis();
+//        return Duration.between(borrowDate, LocalDateTime.now()).toMillis() >
+//                Duration.between(borrowDate, borrowDate.plusMinutes(2)).toMillis();
     }
 
 
@@ -107,6 +109,8 @@ public class LibraryService extends NetworkService {
     public static void scheduleSuspension(Subscriber sub) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime end = now.plusMonths(MONTH_SUSPENDED);
+        // 2 minutes
+//        LocalDateTime end = now.plusMinutes(2);
         long time = Duration.between(now, end).toMillis();
 
         TimerTask autoSuspension = new AutomatedCancellationSuspension(sub);

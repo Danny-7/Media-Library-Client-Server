@@ -20,6 +20,9 @@ public class GeneralDocument implements Document {
 
     private LocalDateTime borrowDate;
     private static final int MAX_RESERVATION_TIME = 72000000;
+//     1 minutes for development test
+//    private static final int MAX_RESERVATION_TIME = 60000;
+
 
     public GeneralDocument(String title) {
         this.title = title;
@@ -87,11 +90,10 @@ public class GeneralDocument implements Document {
                 throw new BorrowException("The document is not available");
             if(this.holder == null)
                 holder = sb;
-            else {
-                status = State.BORROWED;
-                borrowDate = LocalDateTime.now();
+            else
                 LibraryService.cancelReservation(this.number);
-            }
+            status = State.BORROWED;
+            borrowDate = LocalDateTime.now();
         }
     }
 
