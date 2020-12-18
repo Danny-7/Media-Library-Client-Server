@@ -1,7 +1,8 @@
 package main.server.services;
 
 import main.server.models.documents.GeneralDocument;
-import main.server.models.exception.BorrowException;
+import main.server.models.exception.ReservationException;
+import main.server.models.exception.SuspensionException;
 import main.server.models.members.Subscriber;
 
 import java.net.Socket;
@@ -22,7 +23,7 @@ public class ReservationService extends LibraryService implements Runnable{
 
             send("The document : " + doc + " has been successfully reserved");
 
-        } catch(BorrowException e1) {
+        } catch(ReservationException | SuspensionException e1) {
             send("error : " + e1.getMessage());
         }
     }

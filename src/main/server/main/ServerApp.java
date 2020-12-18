@@ -15,6 +15,16 @@ public class ServerApp {
     public static List<GeneralDocument> documents;
     public static List<Subscriber> subscribers;
 
+    private static int lastDocumentNumber = 0;
+    private static int lastMemberNumber = 0;
+
+    public static int getNewDocNumber() {
+        return ++lastDocumentNumber;
+    }
+    public static int getNewMemberNumber() {
+        return ++lastMemberNumber;
+    }
+
     //On lance ici les 3 threads réservation / emprunt / retour
     public static void main(String[] args) {
 
@@ -29,6 +39,7 @@ public class ServerApp {
         subscribers.add(new Subscriber("Jules Doumèche", LocalDate.of(2001,5,6)));
         subscribers.add(new Subscriber("Gwénolé Martin", LocalDate.of(2001,5,6)));
         subscribers.add(new Subscriber("Daniel Aguiar", LocalDate.of(2001,7,24)));
+        subscribers.add(new Subscriber("Hugo Aguiar", LocalDate.of(2011,4,29)));
 
         ReservationServer reservationServer = new ReservationServer();
         BorrowServer borrowServer = new BorrowServer();
