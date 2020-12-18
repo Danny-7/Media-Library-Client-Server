@@ -94,6 +94,8 @@ public class GeneralDocument implements Document {
                 LibraryService.cancelReservation(this.number);
             status = State.BORROWED;
             borrowDate = LocalDateTime.now();
+            // MAX BORROW 3 WEEKS
+            LibraryService.scheduleBorrow(sb, this);
         }
     }
 
@@ -107,7 +109,9 @@ public class GeneralDocument implements Document {
             else if(isBorrowed())
                 if(LibraryService.isBorrowLate(this))
                     holder.suspend();
-
+                else
+                    // IF isn't late, we cancel the timer task
+                    LibraryService.cancelBorrow(number());
             holder = null;
             status = State.AVAILABLE;
 

@@ -1,9 +1,11 @@
 package main.server.services;
 
 import main.server.main.ServerApp;
+import main.server.models.BorrowUtil;
 import main.server.models.Document;
 import main.server.models.documents.GeneralDocument;
 import main.server.models.members.Subscriber;
+import main.server.models.utils.AutomatedBorrowSchedule;
 import main.server.models.utils.AutomatedCancellationReservation;
 import main.server.models.utils.AutomatedCancellationSuspension;
 
@@ -18,9 +20,11 @@ public class LibraryService extends NetworkService {
 
     private static final Timer endReservations = new Timer();
     private static final Timer endSuspensions = new Timer();
+    private static final Timer endBorrows = new Timer();
 
     private static final HashMap<Integer, TimerTask> reservations = new HashMap<>();
     private static final HashMap<Integer, TimerTask> suspensions = new HashMap<>();
+    private static final HashMap<BorrowUtil, TimerTask> borrows = new HashMap<>();
 
     private static final int MAX_BORROW_WEEKS = 3;
     private static final int MONTH_SUSPENDED = 1;
@@ -85,10 +89,10 @@ public class LibraryService extends NetworkService {
     public static boolean isBorrowLate(GeneralDocument doc) {
         LocalDateTime borrowDate = doc.getBorrowDate();
 
-        return Duration.between(borrowDate, LocalDateTime.now()).toMillis() >
-                Duration.between(borrowDate, borrowDate.plusWeeks(MAX_BORROW_WEEKS)).toMillis();
 //        return Duration.between(borrowDate, LocalDateTime.now()).toMillis() >
-//                Duration.between(borrowDate, borrowDate.plusMinutes(2)).toMillis();
+//                Duration.between(borrowDate, borrowDate.plusWeeks(MAX_BORROW_WEEKS)).toMillis();
+        return Duration.between(borrowDate, LocalDateTime.now()).toMillis() >
+                Duration.between(borrowDate, borrowDate.plusMinutes(2)).toMillis();
     }
 
 
@@ -98,6 +102,16 @@ public class LibraryService extends NetworkService {
 
     public static void cancelSuspension(Integer id) {
         suspensions.get(id).cancel();
+    }
+
+    public static void cancelBorrow(Integer id) {
+        BorrowUtil brU= borrows.keySet()
+                .stream()
+                .filter(borrowU -> borrowU.getDocNumber().equals(id))
+                .findAny()
+                .get();
+        borrows.get(brU).cancel();
+        System.out.println("The borrow automated task was canceled");
     }
 
     public static void scheduleReservation(Document doc, long time) {
@@ -116,6 +130,15 @@ public class LibraryService extends NetworkService {
         TimerTask autoSuspension = new AutomatedCancellationSuspension(sub);
         suspensions.put(sub.getId(), autoSuspension);
         endSuspensions.schedule(autoSuspension, time);
+    }
+
+    public static void scheduleBorrow(Subscriber sub, Document doc) {
+        LocalDateTime now = LocalDateTime.now();
+        long time = Duration.between(now, now.plusMinutes(2)).toMillis();
+        TimerTask borrowSchedule = new AutomatedBorrowSchedule(sub);
+        borrows.put(new BorrowUtil(doc.number(), sub.getId()), borrowSchedule);
+        endBorrows.schedule(borrowSchedule, time);
+        System.out.println("The borrow automated task was scheduled");
     }
 
 }
