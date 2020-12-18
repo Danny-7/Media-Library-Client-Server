@@ -92,26 +92,28 @@ public class LibraryService extends NetworkService {
 //        return Duration.between(borrowDate, LocalDateTime.now()).toMillis() >
 //                Duration.between(borrowDate, borrowDate.plusWeeks(MAX_BORROW_WEEKS)).toMillis();
         return Duration.between(borrowDate, LocalDateTime.now()).toMillis() >
-                Duration.between(borrowDate, borrowDate.plusMinutes(2)).toMillis();
+                Duration.between(borrowDate, borrowDate.plusSeconds(30)).toMillis();
     }
 
 
     public static void cancelReservation(Integer id) {
         reservations.get(id).cancel();
+        reservations.remove(id);
     }
 
     public static void cancelSuspension(Integer id) {
         suspensions.get(id).cancel();
+        suspensions.remove(id);
     }
 
     public static void cancelBorrow(Integer id) {
-        BorrowUtil brU= borrows.keySet()
+        BorrowUtil brU = borrows.keySet()
                 .stream()
                 .filter(borrowU -> borrowU.getDocNumber().equals(id))
-                .findAny()
+                .findFirst()
                 .get();
         borrows.get(brU).cancel();
-        System.out.println("The borrow automated task was canceled");
+        borrows.remove(brU);
     }
 
     public static void scheduleReservation(Document doc, long time) {
@@ -122,9 +124,9 @@ public class LibraryService extends NetworkService {
 
     public static void scheduleSuspension(Subscriber sub) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime end = now.plusMonths(MONTH_SUSPENDED);
-        // 2 minutes
-//        LocalDateTime end = now.plusMinutes(2);
+//        LocalDateTime end = now.plusMonths(MONTH_SUSPENDED);
+        // 30s
+        LocalDateTime end = now.plusSeconds(30);
         long time = Duration.between(now, end).toMillis();
 
         TimerTask autoSuspension = new AutomatedCancellationSuspension(sub);
@@ -134,11 +136,12 @@ public class LibraryService extends NetworkService {
 
     public static void scheduleBorrow(Subscriber sub, Document doc) {
         LocalDateTime now = LocalDateTime.now();
-        long time = Duration.between(now, now.plusMinutes(2)).toMillis();
-        TimerTask borrowSchedule = new AutomatedBorrowSchedule(sub);
+//        long time = Duration.between(now, now.plusWeeks(MAX_BORROW_WEEKS)).toMillis();
+        // 30s
+        long time = Duration.between(now, now.plusSeconds(30)).toMillis();
+        TimerTask borrowSchedule = new AutomatedBorrowSchedule(sub, doc);
         borrows.put(new BorrowUtil(doc.number(), sub.getId()), borrowSchedule);
         endBorrows.schedule(borrowSchedule, time);
-        System.out.println("The borrow automated task was scheduled");
     }
 
 }

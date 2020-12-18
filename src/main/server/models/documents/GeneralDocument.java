@@ -20,8 +20,8 @@ public class GeneralDocument implements Document {
 
     private LocalDateTime borrowDate;
     private static final int MAX_RESERVATION_TIME = 72000000;
-//     1 minutes for development test
-//    private static final int MAX_RESERVATION_TIME = 60000;
+//     30 seconds for development test
+//    private static final int MAX_RESERVATION_TIME = 30000;
 
 
     public GeneralDocument(String title) {
@@ -106,7 +106,7 @@ public class GeneralDocument implements Document {
                 return;
             if(isReserved())
                 LibraryService.cancelReservation(this.number);
-            else if(isBorrowed())
+            else if(!holder.isSuspended() && isBorrowed())
                 if(LibraryService.isBorrowLate(this))
                     holder.suspend();
                 else
