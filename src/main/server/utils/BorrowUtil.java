@@ -1,4 +1,4 @@
-package main.server.models;
+package main.server.utils;
 
 public class BorrowUtil {
     private final Integer docNumber;

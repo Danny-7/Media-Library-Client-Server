@@ -1,8 +1,8 @@
 package main.server.services;
 
 import main.server.models.documents.GeneralDocument;
-import main.server.models.exception.BorrowException;
-import main.server.models.exception.SuspensionException;
+import main.server.models.exceptions.BorrowException;
+import main.server.models.exceptions.SuspensionException;
 import main.server.models.members.Subscriber;
 
 import java.net.Socket;

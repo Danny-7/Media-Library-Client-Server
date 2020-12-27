@@ -2,8 +2,8 @@ package tests.models;
 
 import main.server.models.documents.DVD;
 import main.server.models.documents.GeneralDocument;
-import main.server.models.exception.BorrowException;
-import main.server.models.exception.ReservationException;
+import main.server.models.exceptions.BorrowException;
+import main.server.models.exceptions.ReservationException;
 import main.server.models.members.Subscriber;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

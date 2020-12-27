@@ -1,7 +1,7 @@
 package main.server.services;
 
 import main.server.models.documents.GeneralDocument;
-import main.server.models.exception.BorrowException;
+import main.server.models.exceptions.BorrowException;
 import main.server.models.members.Subscriber;
 
 import java.net.Socket;
@@ -17,6 +17,10 @@ public class ReturnService extends LibraryService implements Runnable{
         try {
             Subscriber sb = requestSubscriber();
             GeneralDocument doc = requestDocument();
+
+            send("Is the document is degraded ? (Y/N)");
+            String response = (String)read();
+            doc.setDegraded(response.equals("Y"));
 
             doc.returnBack();
 

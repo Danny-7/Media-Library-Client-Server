@@ -1,4 +1,4 @@
-package main.server.models.exception;
+package main.server.models.exceptions;
 
 public class BorrowException extends RuntimeException {
 
