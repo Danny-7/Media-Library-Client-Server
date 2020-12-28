@@ -1,7 +1,7 @@
 package main.server.models;
 
-import main.server.models.exception.BorrowException;
-import main.server.models.exception.ReservationException;
+import main.server.models.exceptions.BorrowException;
+import main.server.models.exceptions.ReservationException;
 import main.server.models.members.Subscriber;
 
 public interface Document {

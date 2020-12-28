@@ -1,4 +1,4 @@
-package main.server.models.utils;
+package main.server.utils;
 
 import main.server.models.Document;
 

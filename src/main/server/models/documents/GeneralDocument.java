@@ -2,16 +2,18 @@ package main.server.models.documents;
 
 import main.server.main.ServerApp;
 import main.server.models.Document;
+import main.server.models.ObserverLibrary;
 import main.server.models.State;
-import main.server.models.exception.BorrowException;
-import main.server.models.exception.ReservationException;
-import main.server.models.exception.SuspensionException;
+import main.server.models.Subject;
+import main.server.models.exceptions.BorrowException;
+import main.server.models.exceptions.ReservationException;
+import main.server.models.exceptions.SuspensionException;
 import main.server.models.members.Subscriber;
 import main.server.services.LibraryService;
 
 import java.time.LocalDateTime;
 
-public class GeneralDocument implements Document {
+public class GeneralDocument implements Document, Subject {
     private final int number;
     private final String title;
 
@@ -23,6 +25,7 @@ public class GeneralDocument implements Document {
 //     30 seconds for development test
 //    private static final int MAX_RESERVATION_TIME = 30000;
 
+    private boolean degraded;
 
     public GeneralDocument(String title) {
         this.title = title;
@@ -30,6 +33,7 @@ public class GeneralDocument implements Document {
         this.status = State.AVAILABLE;
         this.holder = null;
         this.borrowDate = null;
+        this.degraded = false;
     }
 
     @Override
@@ -53,6 +57,20 @@ public class GeneralDocument implements Document {
         return borrowDate;
     }
 
+    public boolean isDegraded() {
+        return degraded;
+    }
+
+    public void setDegraded(boolean degraded) {
+        this.degraded = degraded;
+    }
+
+    public void setStatus(State status){
+        this.status = status;
+        if(status == State.AVAILABLE)
+            notifyObservers();
+    }
+
     public boolean isReserved() {
         return this.status.equals(State.RESERVED);
     }
@@ -74,7 +92,7 @@ public class GeneralDocument implements Document {
                 throw new SuspensionException("The subscriber is suspended !");
             if(!isAvailable())
                 throw new ReservationException("The document is not available");
-            status = State.RESERVED;
+            setStatus(State.RESERVED);
             this.holder = sb;
             // scheduling the end of the reservation (2 hours)
             LibraryService.scheduleReservation(this, MAX_RESERVATION_TIME);
@@ -92,7 +110,7 @@ public class GeneralDocument implements Document {
                 holder = sb;
             else
                 LibraryService.cancelReservation(this.number);
-            status = State.BORROWED;
+            setStatus(State.BORROWED);
             borrowDate = LocalDateTime.now();
             // MAX BORROW 3 WEEKS
             LibraryService.scheduleBorrow(sb, this);
@@ -107,13 +125,15 @@ public class GeneralDocument implements Document {
             if(isReserved())
                 LibraryService.cancelReservation(this.number);
             else if(!holder.isSuspended() && isBorrowed())
-                if(LibraryService.isBorrowLate(this))
+                if(this.degraded || LibraryService.isBorrowLate(this))
                     holder.suspend();
+                if(this.degraded)
+                    this.setDegraded(false);
                 else
                     // IF isn't late, we cancel the timer task
                     LibraryService.cancelBorrow(number());
             holder = null;
-            status = State.AVAILABLE;
+            setStatus(State.AVAILABLE);
 
         }
     }
@@ -128,4 +148,15 @@ public class GeneralDocument implements Document {
                 ", borrowDate=" + borrowDate +
                 '}';
     }
+
+    @Override
+    public void register(ObserverLibrary observer) {
+        LibraryService.addNotifier(this, observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        LibraryService.notifyAllObservers(this);
+    }
+
 }
