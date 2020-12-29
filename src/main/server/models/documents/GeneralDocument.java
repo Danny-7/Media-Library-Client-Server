@@ -21,9 +21,7 @@ public class GeneralDocument implements Document, Subject {
     private Subscriber holder;
 
     private LocalDateTime borrowDate;
-    private static final int MAX_RESERVATION_TIME = 72000000;
-//     30 seconds for development test
-//    private static final int MAX_RESERVATION_TIME = 30000;
+    private  LocalDateTime reservationDate;
 
     private boolean degraded;
 
@@ -57,6 +55,10 @@ public class GeneralDocument implements Document, Subject {
         return borrowDate;
     }
 
+    public LocalDateTime getReservationDate() {
+        return reservationDate;
+    }
+
     public boolean isDegraded() {
         return degraded;
     }
@@ -82,7 +84,6 @@ public class GeneralDocument implements Document, Subject {
 
     public boolean isAvailable() {
         return this.status.equals(State.AVAILABLE);
-
     }
 
     @Override
@@ -93,9 +94,10 @@ public class GeneralDocument implements Document, Subject {
             if(!isAvailable())
                 throw new ReservationException("The document is not available");
             setStatus(State.RESERVED);
+            reservationDate = LocalDateTime.now();
             this.holder = sb;
             // scheduling the end of the reservation (2 hours)
-            LibraryService.scheduleReservation(this, MAX_RESERVATION_TIME);
+            LibraryService.scheduleReservation(this);
         }
     }
 

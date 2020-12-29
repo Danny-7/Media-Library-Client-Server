@@ -13,7 +13,9 @@ import main.server.utils.AutomatedCancellationSuspension;
 import java.net.Socket;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class LibraryService extends NetworkService {
 
@@ -29,7 +31,10 @@ public class LibraryService extends NetworkService {
 
     private static final int MAX_BORROW_WEEKS = 3;
     private static final int MONTH_SUSPENDED = 1;
-
+//    private static final int MAX_RESERVATION_TIME = 72000000;
+    private static final int RESERVATION_EXPIRING_DELAY = 30000;
+//  30 seconds for development test
+  private static final int MAX_RESERVATION_TIME = 60000;
 
     public LibraryService(Socket socket) {
         super(socket);
@@ -96,6 +101,25 @@ public class LibraryService extends NetworkService {
 //                Duration.between(borrowDate, borrowDate.plusSeconds(30)).toMillis();
     }
 
+    public static boolean isReservationExpiring(GeneralDocument doc) {
+        if(doc.isReserved()) {
+        LocalDateTime reservationDate = doc.getReservationDate();
+        LocalDateTime expiringDate = reservationDate
+                .plusSeconds(MAX_RESERVATION_TIME/1000)
+                .minusSeconds(RESERVATION_EXPIRING_DELAY/1000);
+        return LocalDateTime.now().isAfter(expiringDate) && LocalDateTime.now().isBefore(reservationDate);
+        }
+        return false;
+    }
+
+    public static int getReservationRemindingTimeFor(GeneralDocument doc) {
+        if(doc.isReserved()) {
+            LocalDateTime reservationEndDate = doc.getReservationDate().plusSeconds(MAX_RESERVATION_TIME/1000);
+            return (int) Duration.between(reservationEndDate, LocalDateTime.now()).toSeconds();
+        }
+        return -1;
+    }
+
     public static void addNotifier(Document doc, ObserverLibrary observer){
         if(observer != null) {
             if(notifyList.get(doc) == null){
@@ -138,10 +162,10 @@ public class LibraryService extends NetworkService {
         borrows.remove(brU);
     }
 
-    public static void scheduleReservation(Document doc, long time) {
+    public static void scheduleReservation(Document doc) {
         TimerTask autoReservation = new AutomatedCancellationReservation(doc);
         reservations.put(doc.number(), autoReservation);
-        endReservations.schedule(autoReservation, time);
+        endReservations.schedule(autoReservation, MAX_RESERVATION_TIME);
     }
 
     public static void scheduleSuspension(Subscriber sub) {

@@ -7,7 +7,7 @@ import main.server.models.members.Subscriber;
 
 import java.net.Socket;
 
-public class ReservationService extends LibraryService implements Runnable{
+public class ReservationService extends LibraryService implements Runnable {
 
     public ReservationService(Socket socket) {
         super(socket);
@@ -17,23 +17,38 @@ public class ReservationService extends LibraryService implements Runnable{
     public void run() {
         Subscriber sb = null;
         GeneralDocument doc = null;
-        try {
-            sb = requestSubscriber();
-            doc = requestDocument();
 
-            doc.reservationFor(sb);
+        sb = requestSubscriber();
+        doc = requestDocument();
+        boolean success = false;
 
-            send("The document : " + doc + " has been successfully reserved");
-
-        } catch(ReservationException | SuspensionException e1) {
-            send("error : " + e1.getMessage());
-            if(e1 instanceof ReservationException ) {
-                send("Do you want to put an alert on this document ? (Y/N)");
-                assert doc != null;
-                String response = (String)read();
+        do {
+            try {
+                doc.reservationFor(sb);
+                send("The document : " + doc + " has been successfully reserved");
+                success = true;
+            } catch(ReservationException e1) {
+                if(LibraryService.isReservationExpiring(doc)) {
+                    while(!doc.isAvailable()) {
+                        try {
+                            Thread.sleep(59);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        int seconds = LibraryService.getReservationRemindingTimeFor(doc);
+                        send("Please wait! The previous reservation will expire in " + seconds + " seconds ...");
+                    }
+                }
+                else {
+                    send("error : " + e1.getMessage());
+                    send("Do you want to put an alert on this document ? (Y/N)");
+                    String response = (String)read();
 //                if(response.equals("Y"))
-                doc.register(sb);
+                    doc.register(sb);
+                }
+            } catch (SuspensionException e2) {
+                send("error : " + e2.getMessage());
             }
-        }
+        } while(!success);
     }
 }
