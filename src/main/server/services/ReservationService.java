@@ -33,13 +33,13 @@ public class ReservationService extends LibraryService implements Runnable {
 
                 if(LibraryService.isReservationExpiring(doc)) {
                     while(!doc.isAvailable()) {
+                        send("Please wait! The previous reservation will expire in "
+                                + LibraryService.getReservationRemindingTimeFor(doc) + " seconds ...\n");
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        long seconds = LibraryService.getReservationRemindingTimeFor(doc);
-                        send("Please wait! The previous reservation will expire in " + seconds + " seconds ...\n");
                     }
                 }
                 else {

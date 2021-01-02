@@ -32,9 +32,10 @@ public class LibraryService extends NetworkService {
     private static final int MAX_BORROW_WEEKS = 3;
     private static final int MONTH_SUSPENDED = 1;
 //    private static final int MAX_RESERVATION_TIME = 72000000;
-    private static final int RESERVATION_EXPIRING_DELAY = 59000;
+    private static final int RESERVATION_EXPIRING_DELAY = 30000;
 //  30 seconds for development test
   private static final int MAX_RESERVATION_TIME = 60000;
+//  60 seconds for development test
 
     public LibraryService(Socket socket) {
         super(socket);

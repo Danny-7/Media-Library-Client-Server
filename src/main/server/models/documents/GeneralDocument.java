@@ -126,7 +126,7 @@ public class GeneralDocument implements Document, Subject {
                 return;
             if(isReserved())
                 LibraryService.cancelReservation(this.number);
-            else if(!holder.isSuspended() && isBorrowed())
+            else if(!holder.isSuspended() && isBorrowed()) {
                 if(this.degraded || LibraryService.isBorrowLate(this))
                     holder.suspend();
                 if(this.degraded)
@@ -134,9 +134,9 @@ public class GeneralDocument implements Document, Subject {
                 else
                     // IF isn't late, we cancel the timer task
                     LibraryService.cancelBorrow(number());
+            }
             holder = null;
             setStatus(State.AVAILABLE);
-
         }
     }
 
