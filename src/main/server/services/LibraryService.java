@@ -32,7 +32,7 @@ public class LibraryService extends NetworkService {
     private static final int MAX_BORROW_WEEKS = 3;
     private static final int MONTH_SUSPENDED = 1;
 //    private static final int MAX_RESERVATION_TIME = 72000000;
-    private static final int RESERVATION_EXPIRING_DELAY = 30000;
+    private static final int RESERVATION_EXPIRING_DELAY = 59000;
 //  30 seconds for development test
   private static final int MAX_RESERVATION_TIME = 60000;
 
@@ -103,19 +103,18 @@ public class LibraryService extends NetworkService {
 
     public static boolean isReservationExpiring(GeneralDocument doc) {
         if(doc.isReserved()) {
-        LocalDateTime reservationDate = doc.getReservationDate();
-        LocalDateTime expiringDate = reservationDate
-                .plusSeconds(MAX_RESERVATION_TIME/1000)
-                .minusSeconds(RESERVATION_EXPIRING_DELAY/1000);
-        return LocalDateTime.now().isAfter(expiringDate) && LocalDateTime.now().isBefore(reservationDate);
+            LocalDateTime reservationEndDate = doc.getReservationDate().plusSeconds(MAX_RESERVATION_TIME/1000);
+            LocalDateTime expiringDate = reservationEndDate.minusSeconds(RESERVATION_EXPIRING_DELAY/1000);
+
+            return LocalDateTime.now().isAfter(expiringDate) && LocalDateTime.now().isBefore(reservationEndDate);
         }
         return false;
     }
 
-    public static int getReservationRemindingTimeFor(GeneralDocument doc) {
+    public static long getReservationRemindingTimeFor(GeneralDocument doc) {
         if(doc.isReserved()) {
             LocalDateTime reservationEndDate = doc.getReservationDate().plusSeconds(MAX_RESERVATION_TIME/1000);
-            return (int) Duration.between(reservationEndDate, LocalDateTime.now()).toSeconds();
+            return Duration.between(LocalDateTime.now(), reservationEndDate).getSeconds();
         }
         return -1;
     }

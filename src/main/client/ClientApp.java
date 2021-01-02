@@ -26,16 +26,17 @@ public class ClientApp {
             String serverMessage;
             String clientResponse;
 
+            ServerListener serverListener = new ServerListener(socketIn);
+            serverListener.start_thread();
+
             while(true) {
-                serverMessage = (String) socketIn.readObject();
-                System.out.println(serverMessage);
                 while((clientResponse = scanIn.nextLine()).isEmpty());
                 socketOut.writeObject(clientResponse);
                 socketOut.flush();
                 socketOut.reset();
             }
 
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
