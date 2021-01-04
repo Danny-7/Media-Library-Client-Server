@@ -11,7 +11,10 @@ import main.server.models.exceptions.SuspensionException;
 import main.server.models.members.Subscriber;
 import main.server.services.LibraryService;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 
 public class GeneralDocument implements Document, Subject {
     private final int number;
@@ -91,8 +94,18 @@ public class GeneralDocument implements Document, Subject {
         synchronized (this) {
             if(sb.isSuspended())
                 throw new SuspensionException("The subscriber is suspended !");
-            if(!isAvailable())
-                throw new ReservationException("The document is not available");
+            if(!isAvailable()) {
+                String message = "";
+                if(isReserved()) {
+                    LocalDateTime endOfReservationTime = getReservationDate().
+                            plusSeconds(LibraryService.getMaxReservationTime() / 1000);
+                    message += "This document is reserved until " +
+                            endOfReservationTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+                }
+                else
+                    message += "This document is borrowed";
+                throw new ReservationException(message);
+            }
             setStatus(State.RESERVED);
             reservationDate = LocalDateTime.now();
             this.holder = sb;
@@ -106,8 +119,8 @@ public class GeneralDocument implements Document, Subject {
         synchronized (this) {
             if(sb.isSuspended())
                 throw new SuspensionException("The subscriber is suspended !");
-            if(!isAvailable())
-                throw new BorrowException("The document is not available");
+            if(isBorrowed() || (isReserved() && !holder.equals(sb)))
+                throw new BorrowException("This document is not available");
             if(this.holder == null)
                 holder = sb;
             else

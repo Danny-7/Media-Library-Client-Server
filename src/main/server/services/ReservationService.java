@@ -15,8 +15,8 @@ public class ReservationService extends LibraryService implements Runnable {
 
     @Override
     public void run() {
-        Subscriber sb = null;
-        GeneralDocument doc = null;
+        Subscriber sb;
+        GeneralDocument doc;
 
         sb = requestSubscriber();
         doc = requestDocument();
@@ -43,12 +43,15 @@ public class ReservationService extends LibraryService implements Runnable {
                     }
                 }
                 else {
-
                     send("error : " + e1.getMessage());
-                    send("Do you want to put an alert on this document ? (Y/N)");
-                    String response = (String)read();
-//                if(response.equals("Y"))
-                    doc.register(sb);
+                    send("Do you want to put an alert on this document ? (Y/N)!");
+                    String response = (String) read();
+                    if (response.equalsIgnoreCase("y")) {
+                        doc.register(sb);
+                        send("An alert was enabled! Bye :)");
+                    } else
+                        send("Bye :)");
+                    success = true;
                 }
             } catch (SuspensionException e2) {
                 send("error : " + e2.getMessage());

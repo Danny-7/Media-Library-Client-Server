@@ -17,7 +17,7 @@ public class ReservationServer implements Runnable {
             this.ssocket = new ServerSocket(port);
         } catch (IOException e) {
             //Handle exception
-            e.printStackTrace();
+            System.err.println(e.getLocalizedMessage());
         }
     }
 
@@ -27,14 +27,10 @@ public class ReservationServer implements Runnable {
             try {
                 Socket csocket = ssocket.accept();
                 System.out.println(suffix + " request received from " + csocket.getInetAddress());
-                System.out.println(csocket);
-                Thread t = new Thread(new ReservationService(csocket));
-                t.start();
-                System.out.println(t.isAlive());
-
+                new Thread(new ReservationService(csocket)).start();
             } catch (IOException e) {
                 //Handle exception
-                e.printStackTrace();
+                System.err.println(e.getLocalizedMessage());
             }
         }
     }

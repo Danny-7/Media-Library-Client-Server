@@ -15,7 +15,6 @@ public class ReturnService extends LibraryService implements Runnable{
     @Override
     public void run() {
         try {
-            Subscriber sb = requestSubscriber();
             GeneralDocument doc = requestDocument();
 
             send("Is the document is degraded ? (Y/N)");

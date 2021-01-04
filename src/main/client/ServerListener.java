@@ -16,13 +16,15 @@ public class ServerListener implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
-            String serverMessage = null;
+        boolean isActive = true;
+        while (isActive) {
+            String serverMessage;
             try {
                 serverMessage = (String) socketIn.readObject();
                 System.out.println(serverMessage);
             } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
+                isActive = false;
             }
         }
     }
