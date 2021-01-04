@@ -12,6 +12,12 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/** DVDBorrowReservationTest : A class for test dvd operations
+ *
+ * @author Jules Doumèche - Daniel Aguiar - Gwénolé Martin
+ * @version 1.0
+ * @since 2021-01-04
+ */
 class DVDBorrowReservationTest {
 
     private static Subscriber sb;

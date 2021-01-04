@@ -16,6 +16,15 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 
+/** GeneralDocument : It represent a general document in the library.
+ * We can make a reservation, borrow and return a document.
+ * He's defined by his number, name. He has a status and another attributes.
+ * He can be degraded by a subscriber
+ *
+ * @author Jules Doumèche - Daniel Aguiar - Gwénolé Martin
+ * @version 1.0
+ * @since 2021-01-04
+ */
 public class GeneralDocument implements Document, Subject {
     private final int number;
     private final String title;
@@ -72,6 +81,7 @@ public class GeneralDocument implements Document, Subject {
 
     public void setStatus(State status){
         this.status = status;
+        // we notify all people who set an alert on this document
         if(status == State.AVAILABLE)
             notifyObservers();
     }
@@ -97,6 +107,7 @@ public class GeneralDocument implements Document, Subject {
             if(!isAvailable()) {
                 String message = "";
                 if(isReserved()) {
+                    // get the endTime of the reservation
                     LocalDateTime endOfReservationTime = getReservationDate().
                             plusSeconds(LibraryService.getMaxReservationTime() / 1000);
                     message += "This document is reserved until " +
@@ -120,6 +131,7 @@ public class GeneralDocument implements Document, Subject {
             if(sb.isSuspended())
                 throw new SuspensionException("The subscriber is suspended !");
             if(isBorrowed() || (isReserved() && !holder.equals(sb)))
+                // here the subscriber didn't reserve the document
                 throw new BorrowException("This document is not available");
             if(this.holder == null)
                 holder = sb;
@@ -127,7 +139,7 @@ public class GeneralDocument implements Document, Subject {
                 LibraryService.cancelReservation(this.number);
             setStatus(State.BORROWED);
             borrowDate = LocalDateTime.now();
-            // MAX BORROW 3 WEEKS
+            // max borrow 3 weeks
             LibraryService.scheduleBorrow(sb, this);
         }
     }
@@ -141,11 +153,14 @@ public class GeneralDocument implements Document, Subject {
                 LibraryService.cancelReservation(this.number);
             else if(!holder.isSuspended() && isBorrowed()) {
                 if(this.degraded || LibraryService.isBorrowLate(this))
+                    /* we suspend the subscriber because he exceeded the time of borrow
+                      or the document is degraded
+                     */
                     holder.suspend();
                 if(this.degraded)
                     this.setDegraded(false);
                 else
-                    // IF isn't late, we cancel the timer task
+                    // if isn't late, we cancel the timer task(borrow)
                     LibraryService.cancelBorrow(number());
             }
             holder = null;
@@ -166,11 +181,13 @@ public class GeneralDocument implements Document, Subject {
 
     @Override
     public void register(ObserverLibrary observer) {
+        // registration of a subscriber to set an alert
         LibraryService.addNotifier(this, observer);
     }
 
     @Override
     public void notifyObservers() {
+        // notifying all subscribers who set an alert
         LibraryService.notifyAllObservers(this);
     }
 

@@ -7,6 +7,15 @@ import main.server.models.members.Subscriber;
 
 import java.net.Socket;
 
+/** ReservationService : A service for reserve a document
+ * if the reservation expiring in less than 30 s
+ * the subscriber wait for the end and the document will reserve for him
+ * Also if isn't available he can choose to set an alert on this document
+ *
+ * @author Jules Doumèche - Daniel Aguiar - Gwénolé Martin
+ * @version 1.0
+ * @since 2021-01-04
+ */
 public class ReservationService extends LibraryService implements Runnable {
 
     public ReservationService(Socket socket) {

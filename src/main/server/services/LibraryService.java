@@ -17,6 +17,19 @@ import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/** LibraryService : A service for the library
+ * List of reservations, suspensions, borrows and notifications to do
+ * With this service you can :
+ *  / cancel or schedule a reservation, suspension, borrow task
+ *  / find a document, subscriber
+ *  / check the state of a borrow
+ *  / get information of the reservation
+ *  / utils for the notification feature of the library
+ *
+ * @author Jules Doumèche - Daniel Aguiar - Gwénolé Martin
+ * @version 1.0
+ * @since 2021-01-04
+ */
 public class LibraryService extends NetworkService {
 
     private static final Timer endReservations = new Timer();
@@ -61,7 +74,7 @@ public class LibraryService extends NetworkService {
 
     protected Subscriber requestSubscriber() {
         send("Enter your subscriber number please ?");
-        Subscriber sb = null;
+        Subscriber sb;
         while (true) {
             try {
                 int subNumber = Integer.parseInt(read().toString());
@@ -80,7 +93,7 @@ public class LibraryService extends NetworkService {
 
     protected GeneralDocument requestDocument() {
         send("Enter a document number please ?");
-        GeneralDocument doc = null;
+        GeneralDocument doc;
         while (true) {
             try {
                 int docNumber = Integer.parseInt(read().toString());
@@ -99,7 +112,7 @@ public class LibraryService extends NetworkService {
 
     public static boolean isBorrowLate(GeneralDocument doc) {
         LocalDateTime borrowDate = doc.getBorrowDate();
-
+        // return true if today date exceed the max borrow time
         return Duration.between(borrowDate, LocalDateTime.now()).toMillis() >
                 Duration.between(borrowDate, borrowDate.plusWeeks(MAX_BORROW_WEEKS)).toMillis();
 //        return Duration.between(borrowDate, LocalDateTime.now()).toMillis() >
@@ -127,6 +140,7 @@ public class LibraryService extends NetworkService {
     public static void addNotifier(Document doc, ObserverLibrary observer){
         if(observer != null) {
             if(notifyList.get(doc) == null){
+                // there isn't a notifications list for this document
                 List<ObserverLibrary> observers = new ArrayList<>();
                 notifyList.put(doc, observers);
             }

@@ -11,6 +11,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/** ServerApp : A server app which contains all objects of the library
+ *
+ * @author Jules Doumèche - Daniel Aguiar - Gwénolé Martin
+ * @version 1.0
+ * @since 2021-01-04
+ */
 public class ServerApp {
     public static List<GeneralDocument> documents;
     public static List<Subscriber> subscribers;
@@ -25,7 +31,7 @@ public class ServerApp {
         return ++lastMemberNumber;
     }
 
-    //On lance ici les 3 threads réservation / emprunt / retour
+    // we launch 3 threads : reservation, borrow and return
     public static void main(String[] args) {
 
         documents = new ArrayList<>();

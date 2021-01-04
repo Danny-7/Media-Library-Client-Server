@@ -4,6 +4,12 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
+/** ClientApp : A client app where you can connect to a local server (port) and interact with
+ *
+ * @author Jules Doumèche - Daniel Aguiar - Gwénolé Martin
+ * @version 1.0
+ * @since 2021-01-04
+ */
 public class ClientApp {
     private static int PORT = 4000;
     private static final String HOST = "localhost";
@@ -20,13 +26,14 @@ public class ClientApp {
                 PORT = Integer.parseInt(line);
 
             Socket socket = new Socket(HOST, PORT);
-
+            // end points to interact with the server
             ObjectOutputStream socketOut = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream socketIn = new ObjectInputStream(socket.getInputStream());
-            String serverMessage;
+
             String clientResponse;
 
             ServerListener serverListener = new ServerListener(socketIn);
+            // thread which collect data from the server
             serverListener.start_thread();
 
             while(true) {

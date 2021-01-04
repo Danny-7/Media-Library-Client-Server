@@ -6,6 +6,13 @@ import main.server.models.members.Subscriber;
 
 import java.net.Socket;
 
+/** ReturnService : A service for return back a document
+ *  Ask if the document is degraded
+ *
+ * @author Jules Doumèche - Daniel Aguiar - Gwénolé Martin
+ * @version 1.0
+ * @since 2021-01-04
+ */
 public class ReturnService extends LibraryService implements Runnable{
 
     public ReturnService(Socket socket) {

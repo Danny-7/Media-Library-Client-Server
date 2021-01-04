@@ -10,6 +10,14 @@ import main.server.services.LibraryService;
 import java.time.LocalDate;
 import java.time.Period;
 
+/** Subscriber: subscriber, observer of the library, defined by:
+ * an id, name, age, birthday date and an email
+ * He can be suspend and alert by email
+ *
+ * @author Jules Doumèche - Daniel Aguiar - Gwénolé Martin
+ * @version 1.0
+ * @since 2021-01-04
+ */
 public class Subscriber implements ObserverLibrary {
     private final int id;
     private final String name;
@@ -71,6 +79,7 @@ public class Subscriber implements ObserverLibrary {
     @Override
     public void update(Document doc) {
         GeneralDocument generalDocument = (GeneralDocument)doc;
-        MailHandler.sendMail("aguiardaniel271@gmail.com", generalDocument.getTitle());
+        // send an email with a template already defined
+        MailHandler.sendMail(this.email, generalDocument.getTitle());
     }
 }

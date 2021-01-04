@@ -4,9 +4,17 @@ import main.server.models.exceptions.BorrowException;
 import main.server.models.exceptions.ReservationException;
 import main.server.models.members.Subscriber;
 
+/** DVD : It's an extension of general document in the library.
+ * He's defined by the general document property
+ * and a recommended age and a boolean for adults
+ *
+ * @author Jules Doumèche - Daniel Aguiar - Gwénolé Martin
+ * @version 1.0
+ * @since 2021-01-04
+ */
 public class DVD extends GeneralDocument{
-    private int recommendedAge;
-    private boolean forAdults;
+    private final int recommendedAge;
+    private final boolean forAdults;
     private static final int ADULTS_AGE = 16;
 
 
@@ -19,6 +27,7 @@ public class DVD extends GeneralDocument{
     @Override
     public void reservationFor(Subscriber sb) throws ReservationException {
         if(sb.getAge() < this.recommendedAge)
+            // the subscriber doesn't have the recommended age
             throw new ReservationException("You don't have the recommended age !");
         super.reservationFor(sb);
     }

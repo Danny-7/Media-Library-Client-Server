@@ -6,6 +6,13 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 
+/** NetworkService : A service for the network operation
+ * Send to the client and read an object serializable from the client
+ *
+ * @author Jules Doumèche - Daniel Aguiar - Gwénolé Martin
+ * @version 1.0
+ * @since 2021-01-04
+ */
 public class NetworkService {
     private ObjectInputStream in = null;
     private ObjectOutputStream out = null;

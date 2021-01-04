@@ -3,6 +3,12 @@ package main.client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
+/** ServerListener : A listener for the data sent by the server
+ *
+ * @author Jules Doumèche - Daniel Aguiar - Gwénolé Martin
+ * @version 1.0
+ * @since 2021-01-04
+ */
 public class ServerListener implements Runnable {
     private ObjectInputStream socketIn;
 
@@ -20,6 +26,7 @@ public class ServerListener implements Runnable {
         while (isActive) {
             String serverMessage;
             try {
+                // read serializable data sent by the server
                 serverMessage = (String) socketIn.readObject();
                 System.out.println(serverMessage);
             } catch (IOException | ClassNotFoundException e) {

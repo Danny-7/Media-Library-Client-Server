@@ -5,6 +5,14 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
+/** MailHandler : Utility for send an email to a target
+ *  You just have to prepare the mail and sent
+ *  It use the gmail smtp server with authentication
+ *
+ * @author Jules Doumèche - Daniel Aguiar - Gwénolé Martin
+ * @version 1.0
+ * @since 2021-01-04
+ */
 public class MailHandler {
 
     private static final String hostEmail = "library.app.iut@gmail.com";
@@ -24,6 +32,7 @@ public class MailHandler {
         //Set smtp port
         properties.put("mail.smtp.port", "587");
 
+        // permit to connect to gmail smtp server
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {

@@ -7,6 +7,12 @@ import main.server.models.members.Subscriber;
 
 import java.net.Socket;
 
+/** BorrowService : A service for borrow a document
+ *
+ * @author Jules Doumèche - Daniel Aguiar - Gwénolé Martin
+ * @version 1.0
+ * @since 2021-01-04
+ */
 public class BorrowService extends LibraryService implements Runnable {
 
     public BorrowService(Socket socket) {
