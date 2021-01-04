@@ -17,7 +17,7 @@ public class ReturnServer implements Runnable {
             this.ssocket = new ServerSocket(port);
         } catch (IOException e) {
             //Handle exception
-            e.printStackTrace();
+            System.err.println(e.getLocalizedMessage());
         }
     }
 
@@ -28,10 +28,9 @@ public class ReturnServer implements Runnable {
                 Socket csocket = ssocket.accept();
                 System.out.println(suffix + " request received from " + csocket.getInetAddress());
                 new Thread(new ReturnService(csocket)).start();
-
             } catch (IOException e) {
                 //Handle exception
-                e.printStackTrace();
+                System.err.println(e.getLocalizedMessage());
             }
         }
     }

@@ -34,11 +34,15 @@ public class LibraryService extends NetworkService {
 //    private static final int MAX_RESERVATION_TIME = 72000000;
     private static final int RESERVATION_EXPIRING_DELAY = 30000;
 //  30 seconds for development test
-  private static final int MAX_RESERVATION_TIME = 60000;
+    private static final int MAX_RESERVATION_TIME = 60000;
 //  60 seconds for development test
 
     public LibraryService(Socket socket) {
         super(socket);
+    }
+
+    public static int getMaxReservationTime() {
+        return MAX_RESERVATION_TIME;
     }
 
     private GeneralDocument findDocument(int id) {
