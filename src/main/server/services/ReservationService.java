@@ -6,6 +6,8 @@ import main.server.models.exceptions.SuspensionException;
 import main.server.models.members.Subscriber;
 
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 /** ReservationService : A service for reserve a document
  * if the reservation expiring in less than 30 s
@@ -38,8 +40,8 @@ public class ReservationService extends LibraryService implements Runnable {
                 success = true;
             } catch(ReservationException e1) {
 
-                if(LibraryService.isReservationExpiring(doc) && sb.isSuspended()) {
-                    while(!doc.isReserved()) {
+                if(LibraryService.isReservationExpiring(doc) && !sb.isSuspended()) {
+                    while(!doc.isAvailable()) {
                         send("Please wait! The previous reservation will expire in "
                                 + LibraryService.getReservationRemindingTimeFor(doc) + " seconds ...\n");
                         try {
@@ -51,8 +53,14 @@ public class ReservationService extends LibraryService implements Runnable {
                 }
                 else {
                     send("error : " + e1.getMessage());
-                    send("Do you want to put an alert on this document ? (Y/N)!");
-                    String response = (String) read();
+                    String response;
+                    String[] choices = {"Y", "N"};
+                    do {
+                        send("Do you want to put an alert on this document ? (Y/N)!");
+                        response = (String) read();
+                        // check if the value read is on the choices array stream
+                    }while(Arrays.stream(choices).noneMatch(response::equalsIgnoreCase));
+
                     if (response.equalsIgnoreCase("y")) {
                         doc.register(sb);
                         send("An alert was enabled! Bye :)");
@@ -62,6 +70,7 @@ public class ReservationService extends LibraryService implements Runnable {
                 }
             } catch (SuspensionException e2) {
                 send("error : " + e2.getMessage());
+                success = true;
             }
         } while(!success);
     }

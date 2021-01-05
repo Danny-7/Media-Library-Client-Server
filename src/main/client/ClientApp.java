@@ -2,6 +2,7 @@ package main.client;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /** ClientApp : A client app where you can connect to a local server (port) and interact with
@@ -19,10 +20,28 @@ public class ClientApp {
         try {
             Scanner scanIn = new Scanner(new InputStreamReader(System.in));
 
-            System.out.println("Enter a port connection (4000 default)");
+            System.out.println(
+                    """
+                            Welcome to our awesome application !
 
-            String line = scanIn.nextLine();
-            if(!line.equals(""))
+                            Choose which server you want to connect
+                            \t3000 -> Reserve a document
+                            \t4000 -> Borrow a document
+                            \t5000 -> Return back a document
+                            """
+            );
+
+            String[] serversPort = {"3000", "4000", "5000"};
+            String line;
+
+            do {
+                System.out.println("Enter a port connection (4000 default)");
+                line = scanIn.nextLine();
+                if(line.isBlank())
+                    break;
+            }while(Arrays.stream(serversPort).noneMatch(line::equalsIgnoreCase));
+
+            if(!line.isBlank())
                 PORT = Integer.parseInt(line);
 
             Socket socket = new Socket(HOST, PORT);

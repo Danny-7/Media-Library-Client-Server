@@ -5,6 +5,8 @@ import main.server.models.exceptions.BorrowException;
 import main.server.models.members.Subscriber;
 
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 /** ReturnService : A service for return back a document
  *  Ask if the document is degraded
@@ -24,9 +26,15 @@ public class ReturnService extends LibraryService implements Runnable{
         try {
             GeneralDocument doc = requestDocument();
 
-            send("Is the document is degraded ? (Y/N)");
-            String response = (String)read();
-            doc.setDegraded(response.equals("Y"));
+            String response;
+            String[] choices = {"Y", "N"};
+            do {
+                send("Is the document is degraded ? (Y/N)");
+                response = (String)read();
+                // check if the value read is on the choices array stream
+            }while(Arrays.stream(choices).noneMatch(response::equalsIgnoreCase));
+
+            doc.setDegraded(response.equalsIgnoreCase("Y"));
 
             doc.returnBack();
 
