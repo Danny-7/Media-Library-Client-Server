@@ -170,13 +170,7 @@ public class GeneralDocument implements Document, Subject {
 
     @Override
     public String toString() {
-        return "GeneralDocument{" +
-                "number=" + number +
-                ", title='" + title + '\'' +
-                ", status=" + status +
-                ", holder=" + holder +
-                ", borrowDate=" + borrowDate +
-                '}';
+        return title;
     }
 
     @Override

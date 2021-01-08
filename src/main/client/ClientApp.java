@@ -1,6 +1,7 @@
 package main.client;
 
 import java.io.*;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -35,7 +36,7 @@ public class ClientApp {
             String line;
 
             do {
-                System.out.println("Enter a port connection (4000 default)");
+                System.out.println("Enter a connection port (4000 default)");
                 line = scanIn.nextLine();
                 if(line.isBlank())
                     break;
@@ -61,9 +62,8 @@ public class ClientApp {
                 socketOut.flush();
                 socketOut.reset();
             }
-
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Server is not reachable or still initializing, please retry in a few seconds");
         }
     }
 }

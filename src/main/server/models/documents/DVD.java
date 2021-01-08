@@ -41,9 +41,6 @@ public class DVD extends GeneralDocument{
 
     @Override
     public String toString() {
-        return super.toString() + "\n\t DVD{" +
-                "recommendedAge=" + recommendedAge +
-                ", forAdults=" + forAdults +
-                '}';
+        return super.toString() + " (+" + recommendedAge + ")";
     }
 }

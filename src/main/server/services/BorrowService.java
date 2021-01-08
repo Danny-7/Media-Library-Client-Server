@@ -28,11 +28,8 @@ public class BorrowService extends LibraryService implements Runnable {
             GeneralDocument doc = requestDocument();
             try {
                 doc.borrowBy(sb);
-
                 send("The document : " + doc + " has been successfully borrowed");
-                String response =
-                        requestInput(new String[]{"Y", "N"},"Do you want to return another document ? (Y/N)!");
-                success = !response.equalsIgnoreCase("y");
+                success = true;
             } catch(BorrowException | SuspensionException e1 ) {
                 send("error : " + e1.getMessage());
             }
