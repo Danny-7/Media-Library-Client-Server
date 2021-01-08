@@ -23,25 +23,26 @@ public class ReturnService extends LibraryService implements Runnable{
 
     @Override
     public void run() {
-        try {
-            GeneralDocument doc = requestDocument();
+        boolean success = false;
+        do {
+            try {
+                GeneralDocument doc = requestDocument();
 
-            String response;
-            String[] choices = {"Y", "N"};
-            do {
-                send("Is the document is degraded ? (Y/N)");
-                response = (String)read();
-                // check if the value read is on the choices array stream
-            }while(Arrays.stream(choices).noneMatch(response::equalsIgnoreCase));
+                String response
+                        = requestInput(new String[]{"Y", "N"}, "Is the document is degraded ? (Y/N)");
 
-            doc.setDegraded(response.equalsIgnoreCase("Y"));
+                doc.setDegraded(response.equalsIgnoreCase("Y"));
 
-            doc.returnBack();
+                doc.returnBack();
 
-            send("The document : " + doc + " has been successfully returned");
-
-        } catch(BorrowException e1 ) {
-            send("error : " + e1.getMessage());
-        }
+                send("The document : " + doc + " has been successfully returned");
+                response =
+                        requestInput(new String[]{"Y", "N"},"Do you want to return another document ? (Y/N)!");
+                success = !response.equalsIgnoreCase("y");
+            } catch(BorrowException e1 ) {
+                send("error : " + e1.getMessage());
+            }
+        } while (!success);
+        send("Bye ;)");
     }
 }
