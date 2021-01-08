@@ -57,7 +57,8 @@ public class MailHandler {
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
             message.setSubject("Your document " + emailContent + " is available!");
             String htmlCode = "<h3> Hello it's you favorite library !</h3> <br/> " +
-                    "<h5>Your document " + emailContent +" is now available. You can come to reserve or borrow.</h5>";
+                    "<h5>Your document " + emailContent +" is now available. You can come to reserve or borrow.</h5>" +
+                    "<p>By AGUIAR - DOUMÈCHE - MARTIN";
             message.setContent(htmlCode, "text/html");
             return message;
         } catch (Exception ex) {

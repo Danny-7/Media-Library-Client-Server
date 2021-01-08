@@ -44,8 +44,8 @@ public class ServerApp {
 
         subscribers.add(new Subscriber("Jules Doumèche", LocalDate.of(2001,5,6)));
         subscribers.add(new Subscriber("Gwénolé Martin", LocalDate.of(2001,5,6)));
-        subscribers.add(new Subscriber("Daniel Aguiar", LocalDate.of(2001,7,24)));
-        subscribers.add(new Subscriber("Hugo Aguiar", LocalDate.of(2011,4,29)));
+        subscribers.add(new Subscriber("Daniel Aguiar", LocalDate.of(2001,7,24), "aguiardaniel271@gmail.com"));
+        subscribers.add(new Subscriber("Jean François Brette", LocalDate.of(1980,5,29),"jean-francois-brette@u-paris.fr"));
 
         ReservationServer reservationServer = new ReservationServer();
         BorrowServer borrowServer = new BorrowServer();

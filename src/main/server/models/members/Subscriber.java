@@ -24,7 +24,7 @@ public class Subscriber implements ObserverLibrary {
     private final int age;
     private final LocalDate birthdayDate;
     private boolean suspended;
-    private final String email;
+    private String email;
 
 
     public Subscriber(String name, LocalDate birthdayDate) {
@@ -33,7 +33,11 @@ public class Subscriber implements ObserverLibrary {
         this.birthdayDate = birthdayDate;
         this.age = Period.between(birthdayDate, LocalDate.now()).getYears();
         this.suspended = false;
-        this.email = this.name+"@library.com";
+    }
+
+    public Subscriber(String name, LocalDate birthdayDate, String email) {
+        this(name, birthdayDate);
+        this.email = email;
     }
 
     public int getId() {
@@ -79,7 +83,9 @@ public class Subscriber implements ObserverLibrary {
     @Override
     public void update(Document doc) {
         GeneralDocument generalDocument = (GeneralDocument)doc;
+
+        String receiverEmail = this.email != null ? this.email : this.name + "@library.com";
         // send an email with a template already defined
-        MailHandler.sendMail(this.email, generalDocument.getTitle());
+        MailHandler.sendMail(receiverEmail, generalDocument.getTitle());
     }
 }

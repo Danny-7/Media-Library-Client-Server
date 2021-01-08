@@ -45,10 +45,10 @@ public class LibraryService extends NetworkService {
     private static final int MAX_BORROW_WEEKS = 3;
     private static final int MONTH_SUSPENDED = 1;
 //    private static final int MAX_RESERVATION_TIME = 72000000;
-    private static final int RESERVATION_EXPIRING_DELAY = 30000;
 //  30 seconds for development test
-    private static final int MAX_RESERVATION_TIME = 60000;
+    private static final int RESERVATION_EXPIRING_DELAY = 30000;
 //  60 seconds for development test
+private static final int MAX_RESERVATION_TIME = 60000;
 
     public LibraryService(Socket socket) {
         super(socket);
@@ -115,8 +115,11 @@ public class LibraryService extends NetworkService {
         // return true if today date exceed the max borrow time
         return Duration.between(borrowDate, LocalDateTime.now()).toMillis() >
                 Duration.between(borrowDate, borrowDate.plusWeeks(MAX_BORROW_WEEKS)).toMillis();
-//        return Duration.between(borrowDate, LocalDateTime.now()).toMillis() >
-//                Duration.between(borrowDate, borrowDate.plusSeconds(30)).toMillis();
+        /*
+        for development test
+        return Duration.between(borrowDate, LocalDateTime.now()).toMillis() >
+                Duration.between(borrowDate, borrowDate.plusSeconds(30)).toMillis();
+        */
     }
 
     public static boolean isReservationExpiring(GeneralDocument doc) {
@@ -189,7 +192,7 @@ public class LibraryService extends NetworkService {
     public static void scheduleSuspension(Subscriber sub) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime end = now.plusMonths(MONTH_SUSPENDED);
-        // 30s
+        // 30s for development test
 //        LocalDateTime end = now.plusSeconds(30);
         long time = Duration.between(now, end).toMillis();
 
@@ -201,7 +204,7 @@ public class LibraryService extends NetworkService {
     public static void scheduleBorrow(Subscriber sub, Document doc) {
         LocalDateTime now = LocalDateTime.now();
         long time = Duration.between(now, now.plusWeeks(MAX_BORROW_WEEKS)).toMillis();
-        // 30s
+        // 30s for development test
 //        long time = Duration.between(now, now.plusSeconds(30)).toMillis();
         TimerTask borrowSchedule = new AutomatedBorrowSchedule(sub, doc);
         borrows.put(new BorrowUtil(doc.number(), sub.getId()), borrowSchedule);
