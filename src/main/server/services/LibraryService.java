@@ -110,6 +110,16 @@ private static final int MAX_RESERVATION_TIME = 60000;
         return doc;
     }
 
+    protected String requestInput(String[] choices, String message) {
+        String response;
+        do {
+            send(message);
+            response = (String) read();
+            // check if the value read is on the choices array stream
+        }while(Arrays.stream(choices).noneMatch(response::equalsIgnoreCase));
+        return response;
+    }
+
     public static boolean isBorrowLate(GeneralDocument doc) {
         LocalDateTime borrowDate = doc.getBorrowDate();
         // return true if today date exceed the max borrow time
