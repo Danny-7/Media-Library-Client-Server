@@ -28,50 +28,53 @@ public class ReservationService extends LibraryService implements Runnable {
     public void run() {
         Subscriber sb;
         GeneralDocument doc;
-
         sb = requestSubscriber();
-        doc = requestDocument();
-        boolean success = false;
 
+        boolean success = false;
         do {
+            doc = requestDocument();
             try {
                 doc.reservationFor(sb);
                 send("The document : " + doc + " has been successfully reserved");
                 success = true;
             } catch(ReservationException e1) {
-
                 if(LibraryService.isReservationExpiring(doc) && !sb.isSuspended()) {
                     while(!doc.isAvailable()) {
-                        send("Please wait! The previous reservation will expire in "
-                                + LibraryService.getReservationRemindingTimeFor(doc) + " seconds ...\n");
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                        if(!doc.isBorrowed()) {
+                            send("Please wait! The previous reservation will expire in "
+                                    + LibraryService.getReservationRemindingTimeFor(doc) + " seconds ...\n");
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            send("Sorry this document was just borrowed");
+                            break;
                         }
                     }
                 }
                 else {
                     send("error : " + e1.getMessage());
-                    String response;
-                    String[] choices = {"Y", "N"};
-                    do {
-                        send("Do you want to put an alert on this document ? (Y/N)!");
-                        response = (String) read();
-                        // check if the value read is on the choices array stream
-                    }while(Arrays.stream(choices).noneMatch(response::equalsIgnoreCase));
+                    String response =
+                            requestInput(new String[]{"Y", "N"},"Do you want to put an alert on this document ? (Y/N)!");
 
                     if (response.equalsIgnoreCase("y")) {
                         doc.register(sb);
-                        send("An alert was enabled! Bye :)");
-                    } else
-                        send("Bye :)");
+                        send("An alert was enabled!");
+                    }
                     success = true;
                 }
             } catch (SuspensionException e2) {
                 send("error : " + e2.getMessage());
                 success = true;
             }
+            if(success) {
+                String response =
+                        requestInput(new String[]{"Y", "N"},"Do you want to reserve another document ? (Y/N)!");
+                success = !response.equalsIgnoreCase("y");
+            }
         } while(!success);
+        send("Bye ;)");
     }
 }

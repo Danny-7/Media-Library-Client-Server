@@ -21,16 +21,26 @@ public class BorrowService extends LibraryService implements Runnable {
 
     @Override
     public void run() {
-        try {
-            Subscriber sb = requestSubscriber();
+        boolean success = false;
+        Subscriber sb = requestSubscriber();
+
+        do {
             GeneralDocument doc = requestDocument();
+            try {
+                doc.borrowBy(sb);
 
-            doc.borrowBy(sb);
-
-            send("The document : " + doc + " has been successfully borrowed");
-
-        } catch(BorrowException | SuspensionException e1 ) {
-            send("error : " + e1.getMessage());
-        }
+                send("The document : " + doc + " has been successfully borrowed");
+                String response =
+                        requestInput(new String[]{"Y", "N"},"Do you want to return another document ? (Y/N)!");
+                success = !response.equalsIgnoreCase("y");
+            } catch(BorrowException | SuspensionException e1 ) {
+                send("error : " + e1.getMessage());
+            }
+            String response =
+                    requestInput(new String[]{"Y", "N"},"Do you want to borrow another document ? (Y/N)!");
+            if(response.equalsIgnoreCase("y"))
+                success = false;
+        } while (!success);
+        send("Bye ;)");
     }
 }

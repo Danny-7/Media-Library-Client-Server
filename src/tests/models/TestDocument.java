@@ -123,5 +123,4 @@ class TestDocument {
         assertTrue(doc.isAvailable());
         assertNull(doc.getHolder());
     }
-
 }

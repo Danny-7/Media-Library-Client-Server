@@ -45,7 +45,7 @@ public class LibraryService extends NetworkService {
     private static final int MAX_BORROW_WEEKS = 3;
     private static final int MONTH_SUSPENDED = 1;
 //    private static final int MAX_RESERVATION_TIME = 72000000;
-    private static final int RESERVATION_EXPIRING_DELAY = 30000;
+    private static final int RESERVATION_EXPIRING_DELAY = 50000;
 //  30 seconds for development test
     private static final int MAX_RESERVATION_TIME = 60000;
 //  60 seconds for development test
@@ -108,6 +108,16 @@ public class LibraryService extends NetworkService {
             }
         }
         return doc;
+    }
+
+    protected String requestInput(String[] choices, String message) {
+        String response;
+        do {
+            send(message);
+            response = (String) read();
+            // check if the value read is on the choices array stream
+        }while(Arrays.stream(choices).noneMatch(response::equalsIgnoreCase));
+        return response;
     }
 
     public static boolean isBorrowLate(GeneralDocument doc) {
