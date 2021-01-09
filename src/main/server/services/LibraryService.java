@@ -1,6 +1,7 @@
 package main.server.services;
 
 import main.server.main.ServerApp;
+import main.server.models.State;
 import main.server.utils.BorrowUtil;
 import main.server.models.Document;
 import main.server.models.ObserverLibrary;
@@ -49,6 +50,36 @@ public class LibraryService extends NetworkService {
     private static final int RESERVATION_EXPIRING_DELAY = 30000;
 //  60 seconds for development test
 private static final int MAX_RESERVATION_TIME = 60000;
+
+    public String getCatalogue() {
+        String RESET = "\u001B[0m";
+        String RED = "\u001B[31m";
+        String GREEN = "\u001B[32m";
+        String YELLOW = "\u001B[33m";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Catalogue of all documents\n");
+        sb.append("Availability :\t" + GREEN + "Available\t" + YELLOW + "Reserved\t" + RED + "Borrowed" + RESET + "\n");
+        for (GeneralDocument d : ServerApp.documents) {
+            synchronized (d) {
+                switch (d.getStatus()) {
+                    case AVAILABLE:
+                        sb.append(GREEN);
+                        break;
+                    case RESERVED:
+                        sb.append(YELLOW);
+                        break;
+                    case BORROWED:
+                        sb.append(RED);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            sb.append(d.number() + ". '" + d.getTitle() + "'" + RESET + "\n");
+        }
+        return sb.toString();
+    }
 
     public LibraryService(Socket socket) {
         super(socket);

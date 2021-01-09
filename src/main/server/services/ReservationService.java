@@ -28,8 +28,8 @@ public class ReservationService extends LibraryService implements Runnable {
     public void run() {
         Subscriber sb;
         GeneralDocument doc;
+        send(getCatalogue());
         sb = requestSubscriber();
-
         boolean success = false;
         do {
             doc = requestDocument();
