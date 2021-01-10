@@ -45,11 +45,11 @@ public class LibraryService extends NetworkService {
 
     private static final int MAX_BORROW_WEEKS = 3;
     private static final int MONTH_SUSPENDED = 1;
-//    private static final int MAX_RESERVATION_TIME = 72000000;
-//  30 seconds for development test
+    // 2 hours
+    private static final int MAX_RESERVATION_TIME = 72000000;
     private static final int RESERVATION_EXPIRING_DELAY = 30000;
-//  60 seconds for development test
-private static final int MAX_RESERVATION_TIME = 60000;
+    // 60 seconds for development test
+//    private static final int MAX_RESERVATION_TIME = 60000;
 
     public String getCatalogue() {
         String RESET = "\u001B[0m";
@@ -233,7 +233,7 @@ private static final int MAX_RESERVATION_TIME = 60000;
     public static void scheduleSuspension(Subscriber sub) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime end = now.plusMonths(MONTH_SUSPENDED);
-        // 30s for development test
+//        30s for development test
 //        LocalDateTime end = now.plusSeconds(30);
         long time = Duration.between(now, end).toMillis();
 
@@ -245,7 +245,7 @@ private static final int MAX_RESERVATION_TIME = 60000;
     public static void scheduleBorrow(Subscriber sub, Document doc) {
         LocalDateTime now = LocalDateTime.now();
         long time = Duration.between(now, now.plusWeeks(MAX_BORROW_WEEKS)).toMillis();
-        // 30s for development test
+//         30s for development test
 //        long time = Duration.between(now, now.plusSeconds(30)).toMillis();
         TimerTask borrowSchedule = new AutomatedBorrowSchedule(sub, doc);
         borrows.put(new BorrowUtil(doc.number(), sub.getId()), borrowSchedule);
